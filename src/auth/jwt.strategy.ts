@@ -22,14 +22,14 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
   async validate({
     iat,
     exp,
-    email,
+    login,
   }: {
     iat: number;
     exp: number;
-    email: string;
+    login: string;
   }): Promise<User> {
     const isExpired = exp - iat <= 0;
-    const user = await this.authService.validateUserByEmail(email);
+    const user = await this.authService.validateUserByEmail(login);
 
     if (!user || isExpired) {
       throw new UnauthorizedException();

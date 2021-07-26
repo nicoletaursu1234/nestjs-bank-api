@@ -9,6 +9,8 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { Count } from './count/entities/count.entity';
 import { DatabaseModule } from './db/db.module';
+import { TransactionController } from './transaction/transaction.controller';
+import { TransactionModule } from './transaction/transaction.module';
 import { User } from './user/entities/user.entity';
 import { UserController } from './user/user.controller';
 import { UserModule } from './user/user.module';
@@ -21,8 +23,14 @@ import { UserModule } from './user/user.module';
     UserModule,
     AccountModule,
     AuthModule,
+    TransactionModule,
   ],
-  controllers: [AppController, UserController, AccountController],
+  controllers: [
+    AppController,
+    UserController,
+    AccountController,
+    TransactionController,
+  ],
   providers: [AppService],
 })
 export class AppModule {}

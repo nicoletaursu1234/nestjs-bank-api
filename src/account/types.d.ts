@@ -11,6 +11,6 @@ export interface IAccount extends BaseEntity {
   dateOfBirth?: string;
   avatar?: string;
   phoneNumber?: string;
-  count?: ICount;
-  user?: IUser;
+  count: ICount[];
+  user: IUser;
 }

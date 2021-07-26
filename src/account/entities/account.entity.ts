@@ -63,9 +63,13 @@ export class Account extends BaseEntity {
   phoneNumber?: string;
 
   @OneToOne(() => User, (user) => user.account, { nullable: true })
-  user?: User;
+  @JoinColumn({ name: 'user' })
+  user: User;
 
-  @OneToMany(() => Count, (count) => count.account, { nullable: true })
-  @JoinColumn({ name: 'account' })
-  count?: Count;
+  @OneToMany(() => Count, (count) => count.account, {
+    nullable: true,
+    cascade: true,
+  })
+  @JoinColumn({ name: 'count' })
+  count: Count[];
 }

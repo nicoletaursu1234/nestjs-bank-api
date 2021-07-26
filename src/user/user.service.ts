@@ -33,6 +33,7 @@ export class UserService {
       const user = await new User({ login, password }).save();
       const account = await new Account({
         email: login,
+        accountNumber: Date.now().toString(),
       }).save();
       user.account = account;
       await user.save();
@@ -45,10 +46,7 @@ export class UserService {
   }
 
   async getUserByLogin(login: string): Promise<User> {
-    return await this.userRepository.findOne(
-      { login },
-      { relations: ['account'] },
-    );
+    return await User.findOne({ login }, { relations: ['account'] });
   }
 
   async signup(userCredentials: UserDTO): Promise<Partial<IUser>> {

@@ -12,14 +12,17 @@ import { AccountModule } from 'src/account/account.module';
 import { AccountService } from 'src/account/account.service';
 import { Account } from 'src/account/entities/account.entity';
 import { AuthController } from './auth.controller';
+import { CountModule } from 'src/count/count.module';
+import { CountService } from 'src/count/count.service';
+import { Count } from 'src/count/entities/count.entity';
 
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     forwardRef(() => UserModule),
-    AccountModule,
+    forwardRef(() => AccountModule),
     ConfigModule,
-    TypeOrmModule.forFeature([User, Account]),
+    TypeOrmModule.forFeature([User, Account, Count]),
     JwtModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
@@ -37,6 +40,7 @@ import { AuthController } from './auth.controller';
     JwtStrategy,
     ConfigService,
     UserService,
+    CountService,
   ],
   controllers: [AuthController],
   exports: [AuthService, JwtModule, PassportModule],

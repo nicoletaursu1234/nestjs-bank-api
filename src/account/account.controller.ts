@@ -1,4 +1,14 @@
-import { Controller, Get, Req, UseGuards, Body, Put } from '@nestjs/common';
+import {
+  Controller,
+  Get,
+  Req,
+  UseGuards,
+  Body,
+  Put,
+  UseInterceptors,
+  UploadedFile,
+  Post,
+} from '@nestjs/common';
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { Account } from 'src/account/entities/account.entity';
@@ -9,32 +19,44 @@ import {
   ApiUnauthorizedResponse,
   ApiBearerAuth,
 } from '@nestjs/swagger';
+import { AccountService } from './account.service';
+import { FileInterceptor } from '@nestjs/platform-express';
 
 @Controller('account')
 export class AccountController {
+  constructor(private readonly accountService: AccountService) {}
   @Get()
   @ApiBearerAuth()
   @ApiOkResponse({ type: Account })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AuthGuard())
-  async getAccount(
+  async get(
     @Req() { user: { account } }: Request & { user: User },
   ): Promise<Account> {
     return account;
   }
 
-  @Put()
+  @Put('/update')
   @ApiBearerAuth()
   @ApiOkResponse({ type: Account })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AuthGuard())
-  async create(
+  async update(
     @Body() body: AccountDTO,
     @Req() { user }: Request & { user: User },
-  ): Promise<Account> {
-    const { account } = user;
-    const accountUpdate = await new Account({ ...account, ...body }).save();
+  ): Promise<Partial<Account>> {
+    return await this.accountService.update(body, user);
+  }
 
-    return accountUpdate;
+  @Post('/upload-avatar')
+  @ApiBearerAuth()
+  @ApiUnauthorizedResponse({ description: 'Unauthorized' })
+  @UseInterceptors(FileInterceptor('avatar'))
+  @UseGuards(AuthGuard())
+  async uploadAvatar(
+    @UploadedFile() file: Express.Multer.File,
+    @Req() { user }: Request & { user: User },
+  ) {
+    return await this.accountService.uploadAvatar(file, user);
   }
 }
