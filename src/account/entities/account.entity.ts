@@ -16,7 +16,6 @@ export class Account extends BaseEntity {
   constructor({
     id,
     email,
-    accountNumber,
     firstName,
     lastName,
     dateOfBirth,
@@ -29,7 +28,6 @@ export class Account extends BaseEntity {
 
     this.id = id;
     this.email = email;
-    this.accountNumber = accountNumber;
     this.firstName = firstName;
     this.lastName = lastName;
     this.dateOfBirth = dateOfBirth;
@@ -40,9 +38,6 @@ export class Account extends BaseEntity {
   }
   @PrimaryGeneratedColumn('uuid')
   id: string;
-
-  @Column({ nullable: true })
-  accountNumber?: string;
 
   @Column({ nullable: true })
   firstName?: string;
@@ -59,7 +54,7 @@ export class Account extends BaseEntity {
   @Column({ nullable: true })
   avatar?: string;
 
-  @Column({ unique: true, nullable: true })
+  @Column({ nullable: true })
   phoneNumber?: string;
 
   @OneToOne(() => User, (user) => user.account, { nullable: true })
@@ -68,8 +63,7 @@ export class Account extends BaseEntity {
 
   @OneToMany(() => Count, (count) => count.account, {
     nullable: true,
-    cascade: true,
+    eager: true,
   })
-  @JoinColumn({ name: 'count' })
   count: Count[];
 }

@@ -7,12 +7,15 @@ import { Count } from 'src/count/entities/count.entity';
 import { Transaction } from './entities/transaction.entity';
 import { TransactionService } from './transaction.service';
 import { TransactionController } from './transaction.controller';
+import { CountModule } from 'src/count/count.module';
+import { CountService } from 'src/count/count.service';
 @Module({
   imports: [
     PassportModule.register({ defaultStrategy: 'jwt' }),
     TypeOrmModule.forFeature([Account, User, Count, Transaction]),
+    CountModule,
   ],
-  providers: [TransactionService],
+  providers: [TransactionService, CountService],
   controllers: [TransactionController],
   exports: [TransactionService],
 })

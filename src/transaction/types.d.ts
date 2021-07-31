@@ -7,5 +7,13 @@ export interface ITransaction extends BaseEntity {
   currency: string;
   receiver: string;
   status: string;
+  bankName: string;
+  sender: string;
+  createdAt: string;
+  updatedAt?: string;
   count: Partial<ICount>;
+}
+
+export interface ITransactionResponse extends ITransaction {
+  accountNumber: string;
 }

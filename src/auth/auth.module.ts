@@ -12,7 +12,6 @@ import { AccountModule } from 'src/account/account.module';
 import { AccountService } from 'src/account/account.service';
 import { Account } from 'src/account/entities/account.entity';
 import { AuthController } from './auth.controller';
-import { CountModule } from 'src/count/count.module';
 import { CountService } from 'src/count/count.service';
 import { Count } from 'src/count/entities/count.entity';
 

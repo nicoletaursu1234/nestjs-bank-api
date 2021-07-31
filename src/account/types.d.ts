@@ -4,7 +4,6 @@ import { ICount } from 'src/count/types';
 
 export interface IAccount extends BaseEntity {
   id: string;
-  accountNumber?: string;
   firstName?: string;
   lastName?: string;
   email?: string;

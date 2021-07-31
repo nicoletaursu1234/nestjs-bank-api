@@ -1,4 +1,5 @@
 import {
+  BadRequestException,
   ConflictException,
   forwardRef,
   HttpException,
@@ -6,24 +7,20 @@ import {
   Inject,
   Injectable,
   InternalServerErrorException,
+  Logger,
   NotFoundException,
-  UnauthorizedException,
 } from '@nestjs/common';
-import { InjectRepository } from '@nestjs/typeorm';
 import { Account } from 'src/account/entities/account.entity';
 import { AuthService } from 'src/auth/auth.service';
-import { Repository } from 'typeorm';
 import { UserDTO } from './dto/user.dto';
 import { User } from './entities/user.entity';
 import { IUser } from './types';
 
 @Injectable()
 export class UserService {
+  private readonly logger = new Logger(UserService.name);
+
   constructor(
-    @InjectRepository(User)
-    private readonly userRepository: Repository<User>,
-    @InjectRepository(Account)
-    private readonly accountRepository: Repository<Account>,
     @Inject(forwardRef(() => AuthService))
     private readonly authService: AuthService,
   ) {}
@@ -33,14 +30,14 @@ export class UserService {
       const user = await new User({ login, password }).save();
       const account = await new Account({
         email: login,
-        accountNumber: Date.now().toString(),
       }).save();
       user.account = account;
       await user.save();
 
       return await this.authService.generateToken(user);
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
+
       throw new InternalServerErrorException();
     }
   }
@@ -72,7 +69,7 @@ export class UserService {
         });
       }
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
 
       throw e;
     }
@@ -83,7 +80,7 @@ export class UserService {
         password,
       });
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
 
       throw new InternalServerErrorException();
     }
@@ -113,7 +110,7 @@ export class UserService {
         });
       }
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
 
       throw e;
     }
@@ -128,12 +125,12 @@ export class UserService {
         );
         return { accessToken, expiresIn };
       } else {
-        throw new UnauthorizedException();
+        throw new BadRequestException('Wrong password. Please try again');
       }
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
 
-      throw new InternalServerErrorException();
+      throw e;
     }
   }
 }

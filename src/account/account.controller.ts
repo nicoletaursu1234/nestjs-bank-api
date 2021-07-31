@@ -12,7 +12,6 @@ import {
 import { Request } from 'express';
 import { AuthGuard } from '@nestjs/passport';
 import { Account } from 'src/account/entities/account.entity';
-import AccountDTO from './dto/account.dto';
 import { User } from 'src/user/entities/user.entity';
 import {
   ApiOkResponse,
@@ -21,13 +20,14 @@ import {
 } from '@nestjs/swagger';
 import { AccountService } from './account.service';
 import { FileInterceptor } from '@nestjs/platform-express';
+import AccountDTO from './dto/account.dto';
 
 @Controller('account')
 export class AccountController {
   constructor(private readonly accountService: AccountService) {}
   @Get()
   @ApiBearerAuth()
-  @ApiOkResponse({ type: Account })
+  @ApiOkResponse({ type: AccountDTO })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AuthGuard())
   async get(
@@ -38,7 +38,7 @@ export class AccountController {
 
   @Put('/update')
   @ApiBearerAuth()
-  @ApiOkResponse({ type: Account })
+  @ApiOkResponse({ type: AccountDTO })
   @ApiUnauthorizedResponse({ description: 'Unauthorized' })
   @UseGuards(AuthGuard())
   async update(

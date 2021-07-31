@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsString,
   IsOptional,
@@ -13,36 +14,31 @@ export default class AccountDTO {
   @IsOptional()
   @MinLength(1)
   @MaxLength(30)
+  @ApiProperty({ type: String })
   firstName?: string;
 
   @IsString()
   @IsOptional()
   @MinLength(1)
   @MaxLength(30)
+  @ApiProperty({ type: String })
   lastName?: string;
 
   @IsString()
   @IsOptional()
   @MinLength(5)
   @MaxLength(50)
+  @ApiProperty({ type: String })
   email?: string;
-
-  @IsString()
-  @IsOptional()
-  accountNumber?: string;
 
   @IsDateString()
   @IsOptional()
+  @ApiProperty({ type: String })
   dateOfBirth?: string;
-
-  @IsString()
-  @IsOptional()
-  avatar?: string;
 
   @IsOptional()
   @IsMobilePhone()
-  @Matches(/^[0-9]{9,11}$/, {
-    message: 'phoneNumber should be a phone number.',
-  })
+  @Matches(/^[0-9]{8,11}$/)
+  @ApiProperty({ type: String })
   phoneNumber?: string;
 }

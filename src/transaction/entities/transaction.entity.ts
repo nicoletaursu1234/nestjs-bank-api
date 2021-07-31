@@ -17,6 +17,10 @@ export class Transaction extends BaseEntity {
     currency,
     receiver,
     status,
+    bankName,
+    sender,
+    createdAt,
+    updatedAt,
     count,
   }: Partial<ITransaction> = {}) {
     super();
@@ -26,6 +30,10 @@ export class Transaction extends BaseEntity {
     this.currency = currency;
     this.receiver = receiver;
     this.status = status;
+    this.bankName = bankName;
+    this.sender = sender;
+    this.createdAt = createdAt;
+    this.updatedAt = updatedAt;
     this.count = count;
   }
 
@@ -43,6 +51,18 @@ export class Transaction extends BaseEntity {
 
   @Column()
   status: string;
+
+  @Column()
+  sender: string;
+
+  @Column()
+  bankName: string;
+
+  @Column()
+  createdAt: string;
+
+  @Column({ nullable: true })
+  updatedAt?: string;
 
   @ManyToOne(() => Count, (count) => count.transaction)
   @JoinColumn({ name: 'count' })

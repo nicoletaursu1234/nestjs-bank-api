@@ -1,5 +1,6 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
+import { ScheduleModule } from '@nestjs/schedule';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { AccountController } from './account/account.controller';
 import { AccountModule } from './account/account.module';
@@ -24,6 +25,7 @@ import { UserModule } from './user/user.module';
     AccountModule,
     AuthModule,
     TransactionModule,
+    ScheduleModule.forRoot(),
   ],
   controllers: [
     AppController,

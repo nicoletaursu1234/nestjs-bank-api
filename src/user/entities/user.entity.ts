@@ -35,7 +35,7 @@ export class User extends BaseEntity {
   @Exclude()
   password: string;
 
-  @OneToOne(() => Account, (account) => account.user)
+  @OneToOne(() => Account, (account) => account.user, { eager: true })
   @JoinColumn({ name: 'account' })
   account: Account;
 }

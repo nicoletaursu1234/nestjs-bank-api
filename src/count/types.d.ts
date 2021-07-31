@@ -4,8 +4,9 @@ import { BaseEntity } from 'typeorm';
 
 export interface ICount extends BaseEntity {
   id: string;
+  accountNumber: string;
   amount: number;
   currency: string;
   account: IAccount;
-  transaction: ITransaction[];
+  transaction?: ITransaction[];
 }

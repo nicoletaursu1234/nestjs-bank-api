@@ -3,34 +3,51 @@ import {
   ConflictException,
   Injectable,
   InternalServerErrorException,
+  Logger,
 } from '@nestjs/common';
 import sizeOf from 'image-size';
 import { CountService } from 'src/count/count.service';
 import { User } from 'src/user/entities/user.entity';
-import AccountDTO from './dto/account.dto';
 import { Account } from './entities/account.entity';
 import imageScale from 'src/utils/imageScale';
 import { createHmac } from 'crypto';
+import AccountDTO from './dto/account.dto';
 
 @Injectable()
 export class AccountService {
+  private readonly logger = new Logger(AccountService.name);
+
   constructor(private readonly countService: CountService) {}
 
   async update(body: AccountDTO, user: User): Promise<Partial<Account>> {
     const { account } = user;
-    const accountUpdate = await new Account({ ...account, ...body }).save();
+    let accountUpdate;
+    let accountWithCount;
 
-    const accountWithCount = await Account.findOne({
-      where: { id: accountUpdate.id },
-      relations: ['count'],
-    });
+    try {
+      accountUpdate = await new Account({ ...account, ...body }).save();
+      accountWithCount = await Account.findOne({
+        where: { id: accountUpdate.id },
+        relations: ['count'],
+      });
+    } catch (e) {
+      this.logger.error(e);
 
-    if (!accountWithCount.count.length) {
-      const count = await this.countService.create(accountWithCount);
+      throw new InternalServerErrorException();
+    }
 
-      delete count.account;
-      accountUpdate.count = [count];
-      await accountUpdate.save();
+    if (!accountUpdate.count.length) {
+      try {
+        const count = await this.countService.create(accountWithCount);
+
+        delete accountWithCount.count;
+        accountWithCount.count = count;
+        accountWithCount.save();
+      } catch (e) {
+        this.logger.error(e);
+
+        throw new InternalServerErrorException();
+      }
     }
 
     return accountWithCount;
@@ -40,7 +57,8 @@ export class AccountService {
     file: Express.Multer.File,
     user: User,
   ): Promise<Partial<Account>> {
-    const imageTypes = ['jpg', 'png'];
+    const { account } = user;
+    const imageTypes = ['jpg', 'jpeg', 'png'];
     const { mimetype, size, buffer } = file;
 
     const { height, width } = sizeOf(buffer);
@@ -62,21 +80,18 @@ export class AccountService {
     }
 
     if (errors.length) {
-      throw new BadRequestException();
+      throw new BadRequestException(errors);
     }
 
     try {
       const hash = createHmac('sha256', user.login).digest('hex');
       const imagePath = await imageScale(buffer, `${hash}.jpeg`);
-      console.log(imagePath);
-      if (!imagePath)
-        throw new ConflictException({ error: 'Image already exists ' });
 
-      return await this.update({ avatar: imagePath }, user);
+      return await new Account({ ...account, avatar: imagePath }).save();
     } catch (e) {
-      console.error(e);
+      this.logger.error(e);
 
-      throw new InternalServerErrorException();
+      throw e;
     }
   }
 }

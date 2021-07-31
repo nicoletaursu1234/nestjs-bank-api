@@ -2,6 +2,7 @@ import {
   forwardRef,
   Inject,
   Injectable,
+  Logger,
   UnauthorizedException,
 } from '@nestjs/common';
 import { User } from 'src/user/entities/user.entity';
@@ -13,6 +14,7 @@ import { createHmac } from 'crypto';
 
 @Injectable()
 export class AuthService {
+  private readonly logger = new Logger(AuthService.name);
   constructor(
     @Inject(forwardRef(() => UserService))
     private userService: UserService,
@@ -35,6 +37,8 @@ export class AuthService {
   }
 
   async generateToken(user: IUser): Promise<any> {
+    this.logger.log('Token generated');
+
     return {
       expiresIn: this.configService.get('JWT_EXPIRATION'),
       accessToken: this.jwtService.sign({ ...user }),
